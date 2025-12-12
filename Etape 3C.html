@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Étape 3C – Bilan des tâches</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background-color: #f3f3f3; }
+    button { margin: 0 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>Bilan des tâches enregistrées</h1>
+  <p><a href="etape_3B.html">↩️ Retour au formulaire</a></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Titre</th>
+        <th>Description</th>
+        <th>Date création</th>
+        <th>Date fin</th>
+        <th>Priorité</th>
+        <th>Contexte</th>
+        <th>État</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="table-taches"></tbody>
+  </table>
+
+  <script>
+    const priorites = {
+      1: "Très important",
+      2: "Important",
+      3: "Moyen",
+      4: "Peu important",
+      5: "Non prioritaire"
+    };
+
+    const etats = {
+      1: "À faire",
+      2: "En cours",
+      3: "En attente",
+      4: "Terminé",
+      5: "Annulée"
+    };
+
+    const contextes = {
+      1: "Travail",
+      2: "Maison",
+      3: "Courses",
+      4: "Loisirs"
+    };
+
+    function afficherTaches() {
+      const tbody = document.getElementById("table-taches");
+      const taches = JSON.parse(localStorage.getItem("taches")) || [];
+
+      tbody.innerHTML = "";
+
+      taches.forEach(tache => {
+        if (tache.idEtat === "4" || tache.idEtat === "5") return;
+
+        const row = `
+          <tr>
+            <td>${tache.idTache}</td>
+            <td>${tache.libelle}</td>
+            <td>${tache.description}</td>
+            <td>${tache.dateCreation}</td>
+            <td>${tache.dateFin || "—"}</td>
+            <td>${priorites[tache.idPriorite]}</td>
+            <td>${contextes[tache.idContexte]}</td>
+            <td>${etats[tache.idEtat]}</td>
+            <td>
+              <button onclick="changerEtat(${tache.idTache}, '4')">✔️ Terminer</button>
+              <button onclick="changerEtat(${tache.idTache}, '5')">❌ Annuler</button>
+            </td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML("beforeend", row);
+      });
+    }
+
+    function changerEtat(idTache, nouvelEtat) {
+      let taches = JSON.parse(localStorage.getItem("taches")) || [];
+      const tache = taches.find(t => t.idTache == idTache);
+      if (tache) {
+        tache.idEtat = nouvelEtat;
+        localStorage.setItem("taches", JSON.stringify(taches));
+        afficherTaches();
+      }
+    }
+
+    afficherTaches();
+  </script>
+
+</body>
+</html>
